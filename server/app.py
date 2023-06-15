@@ -1,10 +1,210 @@
-from flask import Flask
+from flask import request, make_response, session
+from flask_restful import Resource
+from config import app, db, api
+from models import db, User, Baby, Output, Input
 
-app = Flask(__name__)
+class Signup(Resource):
 
-@app.route('/members')
-def members():
-    return {"members": ["member1", "member2", "member3"]}
+    def post(self):
+        data = request.get_json()
+        if not data.get("username") or not data.get("password"):
+            return {'error': 'Username and password are required.'}, 422
+
+        existing_user = User.query.filter_by(username=data["username"]).first()
+        if existing_user:
+            return {'error': 'Username already taken.'}, 422
+
+        new_user = User(
+            username   = data["username"],
+            avatar_url = data.get("avatar_url") 
+        )
+        new_user.password_hash = data["password"]
+
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            session['user_id'] = new_user.id
+            return new_user.to_dict(), 201
+        except Exception as e:
+            return {'error': str(e)}, 422
+
+class CheckSession(Resource):
+
+    def get(self):
+        if session["user_id"]:
+            user = User.query.filter(User.id == session['user_id']).first()
+            return user.to_dict(), 200
+    
+class Login(Resource):
+
+    def post(self):
+        data = request.get_json()
+        user = User.query.filter(User.username == data["username"]).first()
+        if user and user.authenticate(data["password"]):
+            session['user_id'] = user.id
+            return user.to_dict(), 200
+        return {'error': '401 Unauthorized'}, 401
+    
+class Logout(Resource):
+    
+    def delete(self):
+        if session["user_id"]:
+            session["user_id"] = None
+            return {}, 204
+        return {'error': '401 Unauthorized'}, 401
+
+class Index(Resource):
+
+    def get(self):
+        if session.get('user_id'):
+            return make_response("Stream API Index", 200)
+        return {'error': '401 Unauthorized'}, 401
+
+class Users(Resource):
+
+    def get(self):
+        users = [user.to_dict() for user in User.query.all()]
+        return users, 200
+    
+    def post(self):
+        try:
+            data = request.get_json()
+            new_user = User(
+                username   = data["username"],
+                avatar_url = data["avatar_url"]
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            return new_user.to_dict(), 201
+        except Exception as e:
+            return e
+    
+class UserById(Resource):
+
+    def get(self, id):
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            return {"error": "User not found"}, 404
+        return user.to_dict(), 200
+    
+    def patch(self, id):
+        try:
+            data = request.get_json()
+            user = User.query.filter_by(id=id).first()
+            if not user:
+                return {"error": "User not found"}, 404
+            for attr in data:
+                setattr(user, attr, data[attr])
+            db.session.add(user)
+            db.session.commit()
+            return user.to_dict(), 200
+        except Exception as e:
+            return e
+
+    def delete(self, id):
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            return {"error": "User not found"}, 404
+        db.session.delete(user)
+        db.session.commit()
+        return {}, 204
+
+class Babies(Resource):
+
+    def get(self):
+        babies = [baby.to_dict() for baby in Baby.query.all()]
+        return babies, 200
+    
+    def post(self):
+        try:
+            data = request.get_json()
+            new_baby = Baby(
+                name    = data["name"],
+                user_id = data["user_id"]
+            )
+            db.session.add(new_baby)
+            db.session.commit()
+            return new_baby.to_dict(), 201
+        except Exception as e:
+            return {'error': str(e)}, 422
+
+class BabyById(Resource):
+
+    def get(self, id):
+        baby = Baby.query.filter_by(id=id).first()
+        if not baby:
+            return {"error": "Baby not found"}, 404
+        return baby.to_dict(), 200
+
+class Outputs(Resource):
+
+    def get(self):
+        outputs = [output.to_dict() for output in Output.query.all()]
+        return outputs, 200
+
+    def post(self):
+        try:
+            data = request.get_json()
+            new_output = Output(
+                value    = data["value"],
+                baby_id  = data["baby_id"],
+                input_id = data["input_id"]
+            )
+            db.session.add(new_output)
+            db.session.commit()
+            return new_output.to_dict(), 201
+        except Exception as e:
+            return {'error': str(e)}, 422
+
+class OutputById(Resource):
+
+    def get(self, id):
+        output = Output.query.filter_by(id=id).first()
+        if not output:
+            return {"error": "Output not found"}, 404
+        return output.to_dict(), 200
+
+class Inputs(Resource):
+
+    def get(self):
+        inputs = [input.to_dict() for input in Input.query.all()]
+        return inputs, 200
+    
+    def post(self):
+        try:
+            data = request.get_json()
+            new_input = Input(
+                value = data["value"]
+            )
+            db.session.add(new_input)
+            db.session.commit()
+            return new_input.to_dict(), 201
+        except Exception as e:
+            return {'error': str(e)}, 422
+
+class InputById(Resource):
+
+    def get(self, id):
+        input = Input.query.filter_by(id=id).first()
+        if not input:
+            return {"error": "Input not found"}, 404
+        return input.to_dict(), 200
+
+
+
+api.add_resource(Index, '/')
+api.add_resource(Signup, '/signup')
+api.add_resource(CheckSession, '/check_session')
+api.add_resource(Login, '/login')
+api.add_resource(Logout, '/logout') 
+api.add_resource(Users, '/users')
+api.add_resource(UserById, '/users/<int:id>')
+api.add_resource(Babies, '/babies')
+api.add_resource(BabyById, '/babies/<int:id>')
+api.add_resource(Outputs, '/outputs')
+api.add_resource(OutputById, '/outputs/<int:id>')
+api.add_resource(Inputs, '/inputs')
+api.add_resource(InputById, '/inputs/<int:id>')
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    app.run(port = 5555, debug = True)
