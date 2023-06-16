@@ -2,6 +2,51 @@ from flask import request, make_response, session
 from flask_restful import Resource
 from config import app, db, api
 from models import db, User, Baby, Output, Input
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import Dense
+import numpy as np
+import os
+
+class TrainModel(Resource):
+    def post(self, baby_id):  # We now take in a baby_id parameter
+        baby = Baby.query.filter_by(id=baby_id).first()
+        if not baby:
+            return {"error": "Baby not found"}, 404
+        
+        data = request.get_json()
+        X = np.array(data.get('X', []))
+        Y = np.array(data.get('Y', []))
+        
+        if X.size == 0 or Y.size == 0:
+            return {"error": "Data for training is empty. Please provide training data."}, 400
+        
+        if os.path.isfile(baby.model_path):
+            model = load_model(baby.model_path)
+        else:
+            model = Sequential([
+                Dense(32, activation='relu', input_shape=[2]),
+                Dense(1)
+            ])
+            model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+        
+        model.fit(X, Y, epochs=10)
+        model.save(baby.model_path)  # We save the model to the baby's model path
+        return {'status': 'success'}
+
+class PredictSum(Resource):
+    def post(self, baby_id):  # We now take in a baby_id parameter
+        baby = Baby.query.filter_by(id=baby_id).first()
+        if not baby:
+            return {"error": "Baby not found"}, 404
+
+        if os.path.isfile(baby.model_path):
+            model = load_model(baby.model_path)
+        else:
+            return {"error": "Model not found. Please train the model first."}, 404
+
+        data = request.get_json()
+        prediction = model.predict(np.array([data]))
+        return {'prediction': prediction.tolist()}
 
 class Signup(Resource):
 
@@ -205,6 +250,13 @@ api.add_resource(Outputs, '/outputs')
 api.add_resource(OutputById, '/outputs/<int:id>')
 api.add_resource(Inputs, '/inputs')
 api.add_resource(InputById, '/inputs/<int:id>')
+api.add_resource(TrainModel, '/train_model/<int:baby_id>') 
+api.add_resource(PredictSum, '/predict_sum/<int:baby_id>') 
 
 if __name__ == '__main__':
+    if os.path.isfile('model.h5'):
+        print("Loading model...")
+        model = load_model('model.h5')
+    else:
+        print("No model found. Please train the model first.")
     app.run(port = 5555, debug = True)

@@ -8,7 +8,7 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-babies.users',)
+    serialize_rules = ('-babies.user',)
 
     id = Column(Integer, primary_key=True)
     username = Column(String)
@@ -42,15 +42,17 @@ class User(db.Model, SerializerMixin):
             raise ValueError("Must have a username!")
         return value
 
+
 class Baby(db.Model, SerializerMixin):
     __tablename__ = 'babies'
 
-    serialize_rules = ('-outputs.babies',)
+    serialize_rules = ('-user.babies', '-outputs.baby')
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
     outputs = relationship('Output', backref='baby')
+    model_path = Column(String)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
@@ -58,10 +60,11 @@ class Baby(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Baby {self.id}>'
 
+
 class Output(db.Model, SerializerMixin):
     __tablename__ = 'outputs'
 
-    serialize_rules = ('-baby.outputs', '-inputs.outputs',)
+    serialize_rules = ('-baby.outputs', '-input.outputs')
 
     id = Column(Integer, primary_key=True)
     value = Column(Float)
@@ -75,10 +78,11 @@ class Output(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Output {self.id}>'
 
+
 class Input(db.Model, SerializerMixin):
     __tablename__ = 'inputs'
 
-    serialize_rules = ('-outputs.inputs',)
+    serialize_rules = ('-outputs.input',)
 
     id = Column(Integer, primary_key=True)
     value = Column(Float)
