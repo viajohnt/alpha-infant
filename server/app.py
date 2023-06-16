@@ -44,7 +44,10 @@ class PredictSum(Resource):
         else:
             return {"error": "Model not found. Please train the model first."}, 404
 
-        data = request.get_json()
+        data = request.get_json().get('data')
+        if data is None:
+            return {"error": "Data not found in request"}, 400
+
         prediction = model.predict(np.array([data]))
         return {'prediction': prediction.tolist()}
 

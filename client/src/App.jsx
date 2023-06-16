@@ -24,12 +24,14 @@ function App() {
 
   const predictSum = async () => {
     try {
+      // Parse inputData to an array of numbers
+      const parsedData = inputData.split('+').map(x => parseFloat(x));
       const response = await fetch(`api/predict_sum/${babyId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({data: inputData})  // Pass the inputData as prediction data
+        body: JSON.stringify({data: parsedData})  // Pass the parsed inputData as prediction data
       });
       const data = await response.json();
       setPrediction(data.prediction);
@@ -37,19 +39,28 @@ function App() {
       console.error(err);
     }
   };
+  
 
   const handleInputChange = (e) => {
     setInputData(e.target.value);
-    // Assuming inputData is of the format 'a + b = c'
-    // Split the inputData and update the trainData
-    const [a, , b, , c] = e.target.value.split(' ');
-    setTrainData({ X: [[parseFloat(a), parseFloat(b)]], Y: [[parseFloat(c)]] });
-     
+  }
+
+  const handleTrainingDataChange = (e) => {
+    const lines = e.target.value.split('\n');
+    const X = [];
+    const Y = [];
+    for (let line of lines) {
+      const [a, , b, , c] = line.split(' ');
+      X.push([parseFloat(a), parseFloat(b)]);
+      Y.push([parseFloat(c)]);
+    }
+    setTrainData({ X, Y });
   }
 
   return (
     <div>
       <input type="text" placeholder="Baby ID" onChange={e => setBabyId(e.target.value)} />
+      <textarea placeholder="Training Data" onChange={handleTrainingDataChange} />
       <input type="text" placeholder="Input Data" onChange={handleInputChange} />
       <button onClick={trainModel}>Train Model</button>
       <button onClick={predictSum}>Predict Sum</button>
