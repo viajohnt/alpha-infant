@@ -52,7 +52,6 @@ class PredictSum(Resource):
         return {'prediction': prediction.tolist()}
 
 class Signup(Resource):
-
     def post(self):
         data = request.get_json()
         if not data.get("username") or not data.get("password"):
@@ -64,7 +63,7 @@ class Signup(Resource):
 
         new_user = User(
             username   = data["username"],
-            avatar_url = data.get("avatar_url") 
+            avatar_url = data.get("avatar_url")
         )
         new_user.password_hash = data["password"]
 
@@ -75,6 +74,7 @@ class Signup(Resource):
             return new_user.to_dict(), 201
         except Exception as e:
             return {'error': str(e)}, 422
+
 
 class CheckSession(Resource):
 
@@ -167,14 +167,20 @@ class Babies(Resource):
         try:
             data = request.get_json()
             new_baby = Baby(
-                name    = data["name"],
-                user_id = data["user_id"]
+                name = data["name"],
+                user_id = data["user_id"],
             )
             db.session.add(new_baby)
             db.session.commit()
+
+            # After commit, new_baby.id is assigned, so we can use it to generate the model_path.
+            new_baby.model_path = f'models/baby{new_baby.id}.h5'
+            db.session.commit()
+
             return new_baby.to_dict(), 201
         except Exception as e:
             return {'error': str(e)}, 422
+
 
 class BabyById(Resource):
 
