@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 class TrainModel(Resource):
-    def post(self, baby_id):  # We now take in a baby_id parameter
+    def post(self, baby_id): 
         baby = Baby.query.filter_by(id=baby_id).first()
         if not baby:
             return {"error": "Baby not found"}, 404
@@ -29,12 +29,12 @@ class TrainModel(Resource):
             ])
             model.compile(optimizer='adam', loss='mse', metrics=['mae'])
         
-        model.fit(X, Y, epochs=10)
-        model.save(baby.model_path)  # We save the model to the baby's model path
+        model.fit(X, Y, epochs=1)
+        model.save(baby.model_path) 
         return {'status': 'success'}
 
 class PredictSum(Resource):
-    def post(self, baby_id):  # We now take in a baby_id parameter
+    def post(self, baby_id): 
         baby = Baby.query.filter_by(id=baby_id).first()
         if not baby:
             return {"error": "Baby not found"}, 404
@@ -74,7 +74,6 @@ class Signup(Resource):
             return new_user.to_dict(), 201
         except Exception as e:
             return {'error': str(e)}, 422
-
 
 class CheckSession(Resource):
 

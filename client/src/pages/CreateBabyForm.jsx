@@ -15,7 +15,7 @@ function CreateBabyForm() {
         },
         body: JSON.stringify({ 
           name, 
-          user_id: user.id, // using zustand state
+          user_id: user.id, 
         }),
       });
 

@@ -33,6 +33,7 @@ export default function SignUpForm() {
       if (response.ok) {
         const user = await response.json()
         setUser(user)
+        navigate('/')
       } else {
         const data = await response.json()
         setErrorMsg(data.error)
@@ -42,12 +43,20 @@ export default function SignUpForm() {
     }
   }
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+  
+
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-600 font-dm-sans pt-[8rem]">
-      <div className="bg-gray-700 rounded-lg shadow-lg p-12 w-full max-w-lg translate-y-[-8rem]">
+    <div className="flex items-center justify-center h-screen bg-dark-gray font-dm-sans pt-[8rem]">
+      <div className="bg-light-gray rounded-lg shadow-lg p-12 w-full max-w-lg translate-y-[-8rem]">
         <div className="text-3xl text-center text-white rounded-t-lg">SIGN UP</div>
         {errorMsg && <p className="text-red-500 text-center mb-4">{errorMsg}</p>}
-        <p className="text-xl text-center text-white pt-3 pb-4">Looking for a quest?</p>
+        <p className="text-xl text-center text-white pt-3 pb-10">Ready to become a parent?</p>
         <form onSubmit={handleSubmit} className="flex flex-col">
           <input
             type="text"
@@ -82,13 +91,13 @@ export default function SignUpForm() {
           />
           <button
             type="submit"
-            className="btn btn-primary rounded-full text-white py-2 px-4 bg-blue-500 mb-10 max-w-[14rem] translate-x-[6rem]"
+            className="btn btn-primary rounded-full text-white py-2 px-4 bg-bloo mb-10 max-w-[14rem] translate-x-[6rem]"
           >
             Sign Up
           </button>
         </form>
         <p className="text-center text-white">Already have an account?</p>
-        <Link to="/login" className="text-center text-blue-500 hover:underline block">
+        <Link to="/login" className="text-center text-bloo hover:underline block">
           Sign In
         </Link>
       </div>

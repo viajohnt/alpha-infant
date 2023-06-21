@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useUserStore from '../hooks/userStore';
 import logo from '../assets/logo.png';
 import defaultUserImg from '../assets/user.png';
@@ -8,6 +8,7 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { user, setUser } = useUserStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -27,23 +28,30 @@ const Header = () => {
   };
 
   return (
-    <header className="flex items-center justify-between py-6 px-6 bg-gray-900">
+    <header className="flex items-center justify-between py-6 px-6 bg-darker-gray">
       <div className="logo">
         <Link to="/" className="flex items-center">
           <img src={logo} alt="Logo" className="w-12 h-auto" />
-          <span className="text-white text-2xl font-bold ml-2">ALPHA INFANT</span>
+          <span className="text-white text-3xl font-bold ml-2">ALPHA INFANT</span>
         </Link>
       </div>
       <nav>
         {user ? (
           <div className="flex items-center space-x-4 text-white">
-            <img className="rounded-full h-8 w-8" src={user.avatar_url || defaultUserImg} alt="User" />
+            <Link
+              to="/alpha-infant"
+              className={`mr-auto text-2xl font-bold hover:underline bg-light-gray rounded-sm p-2 ${location.pathname === '/alpha-infant' ? 'underline' : ''}`}
+              style={{ marginRight: '10rem' }}
+            >
+              Train Infant
+            </Link>
+            <img className="rounded-full h-10 w-10" src={user.avatar_url || defaultUserImg} alt="User" />
             <span>@{user.username}</span>
             <button onClick={() => setShowDropdown(!showDropdown)}>
-              &#9660; {/* This is a unicode downward arrow, you can replace it with your dropdown image */}
+              &#9660; 
             </button>
             {showDropdown && (
-              <div className="absolute mt-2 bg-white text-black shadow-lg rounded-lg">
+              <div className="absolute mt-[7rem] translate-x-[18rem] bg-white text-black shadow-lg rounded-lg">
                 <button className="block px-4 py-2" onClick={handleLogout}>Logout</button>
               </div>
             )}
