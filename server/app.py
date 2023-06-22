@@ -29,7 +29,7 @@ class TrainModel(Resource):
             ])
             model.compile(optimizer='adam', loss='mse', metrics=['mae'])
         
-        model.fit(X, Y, epochs=1)
+        model.fit(X, Y, epochs=10)
         model.save(baby.model_path) 
         return {'status': 'success'}
 
@@ -171,15 +171,18 @@ class Babies(Resource):
             )
             db.session.add(new_baby)
             db.session.commit()
-
-            # After commit, new_baby.id is assigned, so we can use it to generate the model_path.
+            
             new_baby.model_path = f'models/baby{new_baby.id}.h5'
             db.session.commit()
 
             return new_baby.to_dict(), 201
         except Exception as e:
             return {'error': str(e)}, 422
-
+        
+class BabiesByUser(Resource):
+    def get(self, user_id):
+        babies = [baby.to_dict() for baby in Baby.query.filter_by(user_id=user_id)]
+        return babies, 200
 
 class BabyById(Resource):
 
@@ -253,6 +256,7 @@ api.add_resource(Logout, '/logout')
 api.add_resource(Users, '/users')
 api.add_resource(UserById, '/users/<int:id>')
 api.add_resource(Babies, '/babies')
+api.add_resource(BabiesByUser, '/api/babies_by_user/<int:user_id>')
 api.add_resource(BabyById, '/babies/<int:id>')
 api.add_resource(Outputs, '/outputs')
 api.add_resource(OutputById, '/outputs/<int:id>')

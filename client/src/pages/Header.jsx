@@ -40,7 +40,7 @@ const Header = () => {
           <div className="flex items-center space-x-4 text-white">
             <Link
               to="/alpha-infant"
-              className={`mr-auto text-2xl font-bold hover:underline bg-light-gray rounded-sm p-2 ${location.pathname === '/alpha-infant' ? 'underline' : ''}`}
+              className={`mr-auto text-xl font-bold hover:underline  ${location.pathname === '/alpha-infant' ? 'underline' : ''}`}
               style={{ marginRight: '10rem' }}
             >
               Train Infant

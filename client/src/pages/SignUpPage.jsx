@@ -78,7 +78,7 @@ export default function SignUpForm() {
             type="password"
             value={passwordConfirmation}
             onChange={(e) => setPasswordConfirmation(e.target.value)}
-            placeholder="Confirm Password"
+            placeholder="Confirm Password"errorMsg
             required
             className="input mb-4 rounded-sm p-3 bg-white focus:outline-none"
           />
