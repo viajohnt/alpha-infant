@@ -9,7 +9,7 @@ function AlphaInfant() {
   const [inputData, setInputData] = useState({a: "", b: ""})
   const [prediction, setPrediction] = useState(null)
   const [trainingInfo, setTrainingInfo] = useState({status: '', loss: []});
-  const [epochs, setEpochs] = useState(10);
+  const [epochs, setEpochs] = useState(1);
   const splineViewerRef = useRef(null)
 
   useEffect(() => {

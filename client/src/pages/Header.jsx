@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import useUserStore from '../hooks/userStore'
 import logo from '../assets/logo.png'
+import gear from '../assets/gear.png'
+import logout from '../assets/logout.png'
 import defaultUserImg from '../assets/user.png'
 
 const Header = () => {
@@ -74,8 +76,15 @@ const Header = () => {
               &#9660; 
             </button>
             {showDropdown && (
-              <div className="absolute mt-[7rem] translate-x-[35rem] bg-white text-black shadow-lg rounded-lg">
-                <button className="block px-4 py-2" onClick={handleLogout}>Logout</button>
+              <div className="absolute mt-[9rem] translate-x-[28rem] w-48 bg-gray-200 rounded-md overflow-hidden shadow-2xl z-10">
+                <Link to="/settings" className="flex items-center px-[3.5rem] py-2 text-sm text-black hover:bg-dark-gray hover:text-white">
+                  <img src={gear} alt="settings" className="h-5 w-5 mr-2" />
+                  Settings
+                </Link>
+                <button onClick={handleLogout} className="flex items-center w-full text-left px-[4rem] py-2 text-sm text-black hover:bg-dark-gray">
+                  <img src={logout} alt="logout" className="h-4 w-4 mr-2" />
+                  Logout
+                </button>
               </div>
             )}
           </div>

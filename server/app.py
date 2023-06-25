@@ -16,7 +16,7 @@ class TrainModel(Resource):
         data = request.get_json()
         X = np.array(data.get('X', []))
         Y = np.array(data.get('Y', []))
-        epochs = data.get('epochs', 10)  # Default to 10 if not provided
+        epochs = data.get('epochs', 1) 
 
         if X.size == 0 or Y.size == 0:
             return {"error": "Data for training is empty. Please provide training data."}, 400
@@ -29,9 +29,8 @@ class TrainModel(Resource):
                 Dense(1)
             ])
             model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-        
-        # Here, we capture the training history to get loss per epoch
-        history = model.fit(X, Y, epochs=epochs).history  # Use epochs from input
+            
+        history = model.fit(X, Y, epochs=epochs).history
         model.save(baby.model_path) 
         return {'status': 'success', 'loss_per_epoch': history['loss']}
 
@@ -106,7 +105,7 @@ class Index(Resource):
 
     def get(self):
         if session.get('user_id'):
-            return make_response("Stream API Index", 200)
+            return make_response("Alpha Infant", 200)
         return {'error': '401 Unauthorized'}, 401
 
 class Users(Resource):
@@ -181,6 +180,7 @@ class Babies(Resource):
         except Exception as e:
             return {'error': str(e)}, 422
         
+        
 class BabiesByUser(Resource):
     def get(self, user_id):
         babies = [baby.to_dict() for baby in Baby.query.filter_by(user_id=user_id)]
@@ -193,6 +193,14 @@ class BabyById(Resource):
         if not baby:
             return {"error": "Baby not found"}, 404
         return baby.to_dict(), 200
+    
+    def delete(self, id):
+        baby = Baby.query.filter_by(id=id).first()
+        if not baby:
+            return {"error": "Baby not found"}, 404
+        db.session.delete(baby)
+        db.session.commit()
+        return {}, 204
 
 class Outputs(Resource):
 
@@ -259,7 +267,7 @@ api.add_resource(Users, '/users')
 api.add_resource(UserById, '/users/<int:id>')
 api.add_resource(Babies, '/babies')
 api.add_resource(BabiesByUser, '/api/babies_by_user/<int:user_id>')
-api.add_resource(BabyById, '/babies/<int:id>')
+api.add_resource(BabyById, '/api/babies/<int:id>', methods=['GET', 'DELETE'])
 api.add_resource(Outputs, '/outputs')
 api.add_resource(OutputById, '/outputs/<int:id>')
 api.add_resource(Inputs, '/inputs')

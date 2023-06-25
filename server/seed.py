@@ -16,7 +16,7 @@ def seed_users():
     print("Seeding Users...")
     users = []
     user_dict = {"username": "User1", "password": "password1", "avatar_url": "https://example.com/avatar1.png"}
-    for i in range(5):
+    for i in range(1):
         user = User(
             username=user_dict["username"] + str(i),
             avatar_url=user_dict["avatar_url"]
@@ -44,7 +44,7 @@ def seed_babies():
 def seed_inputs():
     print("Seeding Inputs...")
     inputs = []
-    for i in range(10):
+    for i in range(1):
         input = Input(
             value=randint(1, 100)
         )

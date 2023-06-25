@@ -40,7 +40,7 @@ function Home() {
         backgroundPosition: '-30% center', 
         backgroundSize: '120%',
       }}>
-      <h1 className="mb-5 text-6xl font-bold text-white translate-y-[-10rem]">AI Baby Training Simulator</h1>
+      <h1 className="mb-5 text-6xl text-white translate-y-[-10rem]">AI Baby Training Simulator</h1>
       <Link to="/create-baby">
       <div className='translate-y-[-5rem]' ref={splineViewerRef}></div>
       </Link>
