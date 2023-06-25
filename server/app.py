@@ -16,7 +16,8 @@ class TrainModel(Resource):
         data = request.get_json()
         X = np.array(data.get('X', []))
         Y = np.array(data.get('Y', []))
-        
+        epochs = data.get('epochs', 10)  # Default to 10 if not provided
+
         if X.size == 0 or Y.size == 0:
             return {"error": "Data for training is empty. Please provide training data."}, 400
         
@@ -29,9 +30,10 @@ class TrainModel(Resource):
             ])
             model.compile(optimizer='adam', loss='mse', metrics=['mae'])
         
-        model.fit(X, Y, epochs=10)
+        # Here, we capture the training history to get loss per epoch
+        history = model.fit(X, Y, epochs=epochs).history  # Use epochs from input
         model.save(baby.model_path) 
-        return {'status': 'success'}
+        return {'status': 'success', 'loss_per_epoch': history['loss']}
 
 class PredictSum(Resource):
     def post(self, baby_id): 

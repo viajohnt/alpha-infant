@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import useUserStore from '../hooks/userStore';
-import logo from '../assets/logo.png';
-import defaultUserImg from '../assets/user.png';
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import useUserStore from '../hooks/userStore'
+import logo from '../assets/logo.png'
+import defaultUserImg from '../assets/user.png'
 
 const Header = () => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const { user, setUser } = useUserStore();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [fullScreen, setFullScreen] = useState(false)
+  const { user, setUser } = useUserStore()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      setFullScreen(!!document.fullscreenElement)
+    };
+    document.addEventListener('fullscreenchange', handleFullScreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullScreenChange)
+    };
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -19,11 +30,19 @@ const Header = () => {
         }
       });
       if (response.status === 204) {
-        setUser(null);
-        navigate('/');
+        setUser(null)
+        navigate('/')
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
+    }
+  };
+
+  const toggleFullScreen = () => {
+    if (fullScreen) {
+      document.exitFullscreen()
+    } else {
+      document.documentElement.requestFullscreen()
     }
   };
 
@@ -40,18 +59,22 @@ const Header = () => {
           <div className="flex items-center space-x-4 text-white">
             <Link
               to="/alpha-infant"
-              className={`mr-auto text-xl font-bold hover:underline  ${location.pathname === '/alpha-infant' ? 'underline' : ''}`}
-              style={{ marginRight: '10rem' }}
+              className={`text-xl font-bold hover:underline mr-[15rem]  ${location.pathname === '/alpha-infant' ? 'underline' : ''}`}
             >
               Train Infant
             </Link>
+            <div>
+              <button onClick={toggleFullScreen} className="px-2 py-1 bg-gray-700 text-white rounded mr-16">
+                {fullScreen ? 'Exit Fullscreen' : 'Fullscreen'}
+              </button>
+            </div>
             <img className="rounded-full h-10 w-10" src={user.avatar_url || defaultUserImg} alt="User" />
             <span>@{user.username}</span>
             <button onClick={() => setShowDropdown(!showDropdown)}>
               &#9660; 
             </button>
             {showDropdown && (
-              <div className="absolute mt-[7rem] translate-x-[18rem] bg-white text-black shadow-lg rounded-lg">
+              <div className="absolute mt-[7rem] translate-x-[35rem] bg-white text-black shadow-lg rounded-lg">
                 <button className="block px-4 py-2" onClick={handleLogout}>Logout</button>
               </div>
             )}
@@ -69,7 +92,7 @@ const Header = () => {
         )}
       </nav>
     </header>
-  );
+  );  
 };
 
-export default Header;
+export default Header

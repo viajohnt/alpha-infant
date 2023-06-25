@@ -23,7 +23,7 @@ export default function LoginForm() {
       if (response.ok) {
         const user = await response.json()
         setUser(user)
-        navigate('/') // Redirect to home page
+        navigate('/') 
       } else {
         setLoginError(true)
       }
@@ -33,11 +33,11 @@ export default function LoginForm() {
   }
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = 'unset'
     };
-  }, []);
+  }, [])
   
 
 

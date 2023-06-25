@@ -21,7 +21,9 @@ export default {
         'cement': '#b1bcbc',
         'light-gray': '#363a47',
         'dark-gray': '#23272e',
-        'darker-gray': '#181c20',  
+        'darker-gray': '#181c20',
+        'off-white': '#f1f5f4',
+        'pink': '#f14ab4'  
       },
       outline: {
         none: ['focus'],

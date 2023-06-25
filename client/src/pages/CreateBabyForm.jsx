@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import useUserStore from '../hooks/userStore';
+import React, { useState } from 'react'
+import useUserStore from '../hooks/userStore'
 
 function CreateBabyForm() {
-  const { user } = useUserStore();
-  const [name, setName] = useState('');
+  const { user } = useUserStore()
+  const [name, setName] = useState('')
 
   const handleSubmit = async event => {
-    event.preventDefault();
+    event.preventDefault()
     try {
       const response = await fetch('/api/babies', {
         method: 'POST',
@@ -17,21 +17,21 @@ function CreateBabyForm() {
           name, 
           user_id: user.id, 
         }),
-      });
+      })
 
       if (response.status === 201) {
-        const responseData = await response.json();
-        alert(`Baby ${responseData.name} created successfully with model path: ${responseData.model_path}`);
-        setName('');
+        const responseData = await response.json()
+        alert(`Baby ${responseData.name} created successfully with model path: ${responseData.model_path}`)
+        setName('')
       } else {
-        const responseData = await response.json();
-        alert(responseData.error || 'Error creating baby');
+        const responseData = await response.json()
+        alert(responseData.error || 'Error creating baby')
       }
     } catch (error) {
-      console.error(error);
-      alert('Error creating baby');
+      console.error(error)
+      alert('Error creating baby')
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -49,4 +49,4 @@ function CreateBabyForm() {
   );
 }
 
-export default CreateBabyForm;
+export default CreateBabyForm
