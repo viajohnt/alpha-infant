@@ -5,7 +5,9 @@ function AlphaInfant() {
   const { user } = useUserStore()
   const [babies, setBabies] = useState([])
   const [babyId, setBabyId] = useState("")
+  const [history, setHistory] = useState([]);
   const [babyError, setBabyError] = useState('')
+  const [selectedBaby, setSelectedBaby] = useState(null);
   const [trainData, setTrainData] = useState([{a: "", b: "", c: ""}])
   const [inputData, setInputData] = useState({a: "", b: ""})
   const [prediction, setPrediction] = useState(null)
@@ -41,6 +43,8 @@ function AlphaInfant() {
     const data = await response.json()
     setBabies(data)
   }
+
+  
 
   useEffect(() => {
     if(user) {
@@ -125,20 +129,22 @@ function AlphaInfant() {
     }
 
     try {
-      const parsedData = [parseFloat(inputData.a), parseFloat(inputData.b)]
+      const parsedData = [parseFloat(inputData.a), parseFloat(inputData.b)];
       const response = await fetch(`api/predict_sum/${babyId}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({data: parsedData})
+        body: JSON.stringify({ data: parsedData }),
       });
-      const data = await response.json()
-      setPrediction(data.prediction)
+      const data = await response.json();
+      setPrediction(data.prediction);
+
+      setHistory(prevHistory => [...prevHistory, { input: inputData, output: data.prediction }]);
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
-  }
+  };
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -177,41 +183,46 @@ function AlphaInfant() {
     setEpochs(Number(e.target.value));
   }
 
-return (
-  <div className="flex flex-row items-start bg-dark-gray h-screen justify-center">
-    <div className="flex flex-col items-center w-1/3 bg-light-gray p-4 m-4 rounded shadow-lg">
-      <h2 className='text-off-white font-semibold text-2xl mb-4'>Details</h2>
-      <p className='text-off-white font-semibold text-xl'>Status: {trainingInfo.status}</p>
-      <p className='text-off-white font-semibold text-xl'>Loss: {trainingInfo.loss.join(', ')}</p>
-      <p className='text-off-white font-semibold text-xl'>Epochs: {epochs}</p>
-    </div>
-    <div className="flex flex-col items-center w-2/3">
-      <div className="flex flex-col w-1/2 items-center"> {/* Changed to items-center */}
-        <label htmlFor="babySelect" className='text-white mb-2'>Select a baby:</label>
-        <select id="babySelect" className="bg-gray-300 rounded p-2 m-2 w-full focus:outline-none" onChange={handleBabyChange}>
-          <option>Select a baby</option>
-          {babies.map(baby => <option key={baby.id} value={baby.id}>{baby.name}</option>)}
-        </select>
-        {babyError && <p style={{ color: 'red' }}>{babyError}</p>}
-        <label htmlFor="epochsInput" className='text-white mb-2'>Number of Epochs:</label>
-        <input id="epochsInput" type="number" className="bg-gray-300 rounded w-16 p-1 mb-4 focus:outline-none" onChange={handleEpochsChange} />
-        {epochsError && <p style={{ color: 'red' }}>{epochsError}</p>}
+  
+
+  return (
+    <div className="flex flex-row items-start bg-dark-gray h-screen justify-center">
+      <div className="flex flex-col items-center w-1/3 bg-light-gray p-4 m-4 rounded shadow-lg">
+        <h2 className='text-off-white font-semibold text-2xl mb-4'>Details</h2>
+        <label className='text-off-white font-semibold text-xl'>Status:</label>
+        <p className='text-green-500 font-semibold text-xl'>{trainingInfo.status}</p>
+        <p className='text-off-white font-semibold text-xl'>Epochs: {epochs}</p>
+        <label className='text-off-white font-semibold text-xl'>Loss:</label>
+        {trainingInfo.loss.map((loss, index) => (
+          <p key={index} className='text-amber-100 font-semibold text-xl mb-2'>{loss}</p>
+        ))}
       </div>
-      <label className='text-white mb-2'>Training Data:</label>
-      {trainData.map((item, index) => (
-        <div key={index} className="flex justify-center space-x-4 mb-4">
-          <input type="number" name="a" value={item.a} onChange={(e) => handleTrainingDataChange(e, index)} className=" bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
-          <span className='text-white'> + </span>
-          <input type="number" name="b" value={item.b} onChange={(e) => handleTrainingDataChange(e, index)} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
-          <span className='text-white'> = </span>
-          <input type="number" name="c" value={item.c} onChange={(e) => handleTrainingDataChange(e, index)} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
-          <button onClick={() => handleRemoveTrainingData(index)} className=' text-white font-bold hover:text-red-400 '>Remove</button>
+      <div className="flex flex-col items-center w-2/3">
+        <div className="flex flex-col w-1/2 items-center mt-10"> 
+          <select id="babySelect" className="bg-gray-300 rounded p-2 m-2 w-full focus:outline-none" onChange={handleBabyChange}>
+            <option>Select a baby</option>
+            {babies.map(baby => <option key={baby.id} value={baby.id}>{baby.name}</option>)}
+          </select>
+          {babyError && <p style={{ color: 'red' }}>{babyError}</p>}
+          <label htmlFor="epochsInput" className='text-white mb-2'>Number of Epochs:</label>
+          <input id="epochsInput" type="number" className="bg-gray-300 rounded w-16 p-1 mb-4 focus:outline-none" onChange={handleEpochsChange} value={epochs} />
+          {epochsError && <p style={{ color: 'red' }}>{epochsError}</p>}
         </div>
-      ))}
-      {trainError && <p style={{ color: 'red' }}>{trainError}</p>}
-      <button onClick={handleAddTrainingData} className='bg-bloo hover:bg-light-blue text-white font-bold py-2 px-4 rounded m-2'>Add Training Data</button>
-      <button className="bg-blue hover:bg-blue-dark bg-pink text-white font-bold py-2 px-4 rounded m-2" onClick={trainModel}>Train Model</button>
-    </div>
+        <label className='text-white mb-2'>Training Data:</label>
+        {trainData.map((item, index) => (
+          <div key={index} className="flex justify-center space-x-4 mb-4">
+            <input type="number" name="a" value={item.a} onChange={(e) => handleTrainingDataChange(e, index)} className=" bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
+            <span className='text-white'> + </span>
+            <input type="number" name="b" value={item.b} onChange={(e) => handleTrainingDataChange(e, index)} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
+            <span className='text-white'> = </span>
+            <input type="number" name="c" value={item.c} onChange={(e) => handleTrainingDataChange(e, index)} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
+            <button onClick={() => handleRemoveTrainingData(index)} className=' text-white font-bold hover:text-red-400 '>Remove</button>
+          </div>
+        ))}
+        {trainError && <p style={{ color: 'red' }}>{trainError}</p>}
+        <button onClick={handleAddTrainingData} className='bg-bloo hover:bg-light-blue text-white font-bold py-2 px-4 rounded m-2'>Add Training Data</button>
+        <button className="bg-blue hover:bg-blue-dark bg-pink text-white font-bold py-2 px-4 rounded m-2" onClick={trainModel}>Train Model</button>
+      </div>
       <div className="flex flex-col items-center w-1/3 bg-light-gray p-4 m-4 rounded shadow-lg">
         <label className='text-white mb-2'>Testing Data:</label>
         <div className="flex justify-center space-x-4">
@@ -222,10 +233,22 @@ return (
         {inputError && <p style={{ color: 'red' }}>{inputError}</p>}
         <button className="bg-blue hover:bg-blue-dark bg-bloo text-white font-bold py-2 px-4 rounded m-2 hover:bg-light-blue" onClick={predictSum}>Predict Sum</button>
         <p className='font-semibold text-xl'><span className='text-white'>Prediction: </span><span className='text-pink'>{prediction}</span></p>
+  
         <div className=' translate-y-[2rem]' ref={splineViewerRef}></div>
+      <div className="flex flex-col items-center w-full bg-light-gray p-4 mt-4 rounded shadow-lg">
+        <h2 className='text-off-white font-semibold text-2xl mb-4'>History</h2>
+        <div className="overflow-y-auto h-full max-h-[225px]">
+          {[...history].reverse().map((record, index) => (
+            <div key={index} className='p-2 border border-gray-200 rounded mb-2 text-gray-300 w-[23rem]'>
+              <p><strong>Input:</strong> a={record.input.a}, b={record.input.b}</p>
+              <p><strong>Output:</strong> {record.output}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-  );
+  </div>
+); 
 }
 
 export default AlphaInfant

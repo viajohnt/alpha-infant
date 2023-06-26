@@ -39,10 +39,8 @@ function Home() {
 
   const handleCreateBaby = () => {
     if (user) {
-      // User is signed in, navigate to create baby page
       navigate('/create-baby');
     } else {
-      // User is not signed in, display error message
       setErrorMessage('You must be signed in to create a baby');
     }
   };
