@@ -81,7 +81,7 @@ const Header = () => {
                   <img src={gear} alt="settings" className="h-5 w-5 mr-2" />
                   Settings
                 </Link>
-                <button onClick={handleLogout} className="flex items-center w-full text-left px-[4rem] py-2 text-sm text-black hover:bg-dark-gray">
+                <button onClick={handleLogout} className="flex items-center w-full text-left px-[4rem] py-2 text-sm text-black hover:bg-dark-gray hover:text-white">
                   <img src={logout} alt="logout" className="h-4 w-4 mr-2" />
                   Logout
                 </button>

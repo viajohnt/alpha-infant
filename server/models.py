@@ -50,6 +50,7 @@ class Baby(db.Model, SerializerMixin):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    favorite_food = Column(String)
     avatar_url = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
     outputs = relationship('Output', backref='baby')

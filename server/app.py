@@ -168,6 +168,8 @@ class Babies(Resource):
             data = request.get_json()
             new_baby = Baby(
                 name = data["name"],
+                favorite_food = data["favorite_food"],
+                avatar_url = data["avatar_url"],
                 user_id = data["user_id"],
             )
             db.session.add(new_baby)
