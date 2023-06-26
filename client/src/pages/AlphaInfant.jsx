@@ -177,42 +177,42 @@ function AlphaInfant() {
     setEpochs(Number(e.target.value));
   }
 
-  return (
-    <div className="flex flex-row items-start bg-dark-gray h-screen justify-center">
-      <div className="flex flex-col items-center w-1/3 bg-light-gray p-4 m-4 rounded shadow-lg translate-y-12">
-        <h2 className='text-off-white font-semibold text-2xl mb-4'>Details</h2>
-        <p className='text-off-white font-semibold text-xl'>Status: {trainingInfo.status}</p>
-        <p className='text-off-white font-semibold text-xl'>Loss: {trainingInfo.loss.join(', ')}</p>
-        <p className='text-off-white font-semibold text-xl'>Epochs: {epochs}</p>
+return (
+  <div className="flex flex-row items-start bg-dark-gray h-screen justify-center">
+    <div className="flex flex-col items-center w-1/3 bg-light-gray p-4 m-4 rounded shadow-lg">
+      <h2 className='text-off-white font-semibold text-2xl mb-4'>Details</h2>
+      <p className='text-off-white font-semibold text-xl'>Status: {trainingInfo.status}</p>
+      <p className='text-off-white font-semibold text-xl'>Loss: {trainingInfo.loss.join(', ')}</p>
+      <p className='text-off-white font-semibold text-xl'>Epochs: {epochs}</p>
+    </div>
+    <div className="flex flex-col items-center w-2/3">
+      <div className="flex flex-col w-1/2 items-center"> {/* Changed to items-center */}
+        <label htmlFor="babySelect" className='text-white mb-2'>Select a baby:</label>
+        <select id="babySelect" className="bg-gray-300 rounded p-2 m-2 w-full focus:outline-none" onChange={handleBabyChange}>
+          <option>Select a baby</option>
+          {babies.map(baby => <option key={baby.id} value={baby.id}>{baby.name}</option>)}
+        </select>
+        {babyError && <p style={{ color: 'red' }}>{babyError}</p>}
+        <label htmlFor="epochsInput" className='text-white mb-2'>Number of Epochs:</label>
+        <input id="epochsInput" type="number" className="bg-gray-300 rounded w-16 p-1 mb-4 focus:outline-none" onChange={handleEpochsChange} />
+        {epochsError && <p style={{ color: 'red' }}>{epochsError}</p>}
       </div>
-      <div className="flex flex-col items-center w-2/3 translate-y-[2rem]">
-        <div className="flex flex-col w-1/2 items-start">
-          <label htmlFor="babySelect" className='text-white mb-2 translate-x-[6.7rem]'>Select a baby:</label>
-          <select id="babySelect" className="bg-gray-300 rounded p-2 m-2 w-full focus:outline-none translate-x-[-.5rem] " onChange={handleBabyChange}>
-            <option>Select a baby</option>
-            {babies.map(baby => <option key={baby.id} value={baby.id}>{baby.name}</option>)}
-          </select>
-          {babyError && <p style={{ color: 'red' }}>{babyError}</p>}
-          <label htmlFor="epochsInput" className='text-white mb-2 translate-x-[5.7rem]'>Number of Epochs:</label>
-          <input id="epochsInput" type="number" className="bg-gray-300 rounded w-16 p-1 mb-4 focus:outline-none translate-x-[7.8rem]" onChange={handleEpochsChange} />
-          {epochsError && <p style={{ color: 'red' }}>{epochsError}</p>}
+      <label className='text-white mb-2'>Training Data:</label>
+      {trainData.map((item, index) => (
+        <div key={index} className="flex justify-center space-x-4 mb-4">
+          <input type="number" name="a" value={item.a} onChange={(e) => handleTrainingDataChange(e, index)} className=" bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
+          <span className='text-white'> + </span>
+          <input type="number" name="b" value={item.b} onChange={(e) => handleTrainingDataChange(e, index)} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
+          <span className='text-white'> = </span>
+          <input type="number" name="c" value={item.c} onChange={(e) => handleTrainingDataChange(e, index)} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
+          <button onClick={() => handleRemoveTrainingData(index)} className=' text-white font-bold hover:text-red-400 '>Remove</button>
         </div>
-        <label className='text-white mb-2'>Training Data:</label>
-        {trainData.map((item, index) => (
-          <div key={index} className="flex justify-center space-x-4 mb-4">
-            <input type="number" name="a" value={item.a} onChange={(e) => handleTrainingDataChange(e, index)} className=" bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
-            <span className='text-white'> + </span>
-            <input type="number" name="b" value={item.b} onChange={(e) => handleTrainingDataChange(e, index)} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
-            <span className='text-white'> = </span>
-            <input type="number" name="c" value={item.c} onChange={(e) => handleTrainingDataChange(e, index)} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
-            <button onClick={() => handleRemoveTrainingData(index)} className=' text-white font-bold hover:text-red-400 '>Remove</button>
-          </div>
-        ))}
-        {trainError && <p style={{ color: 'red' }}>{trainError}</p>}
-        <button onClick={handleAddTrainingData} className='bg-bloo hover:bg-light-blue text-white font-bold py-2 px-4 rounded m-2'>Add Training Data</button>
-        <button className="bg-blue hover:bg-blue-dark bg-pink text-white font-bold py-2 px-4 rounded m-2" onClick={trainModel}>Train Model</button>
-      </div>
-      <div className="flex flex-col items-center w-1/3 bg-light-gray p-4 m-4 rounded shadow-lg translate-y-12">
+      ))}
+      {trainError && <p style={{ color: 'red' }}>{trainError}</p>}
+      <button onClick={handleAddTrainingData} className='bg-bloo hover:bg-light-blue text-white font-bold py-2 px-4 rounded m-2'>Add Training Data</button>
+      <button className="bg-blue hover:bg-blue-dark bg-pink text-white font-bold py-2 px-4 rounded m-2" onClick={trainModel}>Train Model</button>
+    </div>
+      <div className="flex flex-col items-center w-1/3 bg-light-gray p-4 m-4 rounded shadow-lg">
         <label className='text-white mb-2'>Testing Data:</label>
         <div className="flex justify-center space-x-4">
           <input name="a" type="number" value={inputData.a} onChange={handleInputChange} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
