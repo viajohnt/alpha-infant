@@ -2,14 +2,18 @@ import React, { useState, useEffect, useRef } from 'react'
 import useUserStore from '../hooks/userStore'
 
 function AlphaInfant() {
-  const { user } = useUserStore();
-  const [babies, setBabies] = useState([]);
-  const [babyId, setBabyId] = useState("");
+  const { user } = useUserStore()
+  const [babies, setBabies] = useState([])
+  const [babyId, setBabyId] = useState("")
+  const [babyError, setBabyError] = useState('')
   const [trainData, setTrainData] = useState([{a: "", b: "", c: ""}])
   const [inputData, setInputData] = useState({a: "", b: ""})
   const [prediction, setPrediction] = useState(null)
-  const [trainingInfo, setTrainingInfo] = useState({status: '', loss: []});
-  const [epochs, setEpochs] = useState(1);
+  const [trainingInfo, setTrainingInfo] = useState({status: '', loss: []})
+  const [epochs, setEpochs] = useState(1)
+  const [epochsError, setEpochsError] = useState('')
+  const [trainError, setTrainError] = useState('')
+  const [inputError, setInputError] = useState('');
   const splineViewerRef = useRef(null)
 
   useEffect(() => {
@@ -44,7 +48,55 @@ function AlphaInfant() {
     }
   }, [user])
   
+  const validateTrainModel = () => {
+    let error = false;
+
+    if (!babyId) {
+      setBabyError('Selecting a baby is required.');
+      error = true;
+    } else {
+      setBabyError('');
+    }
+
+    if (epochs <= 0) {
+      setEpochsError('Epochs must be a positive number.');
+      error = true;
+    } else {
+      setEpochsError('');
+    }
+
+    trainData.forEach((data, index) => {
+      if (!data.a || !data.b || !data.c) {
+        setTrainError(`Fill in all fields for training data row ${index + 1}.`);
+        error = true;
+      }
+    });
+
+    if (!error) {
+      setTrainError('');
+    }
+
+    return !error;
+  }
+
+  const validatePredictSum = () => {
+    let error = false;
+
+    if (!inputData.a || !inputData.b) {
+      setInputError('Fill in all fields for testing data.');
+      error = true;
+    } else {
+      setInputError('');
+    }
+
+    return !error;
+  }
+
   const trainModel = async () => {
+    if (!validateTrainModel()) {
+      return;
+    }
+
     try {
       const formattedTrainData = {
         X: trainData.map(item => [parseFloat(item.a), parseFloat(item.b)]),
@@ -66,9 +118,12 @@ function AlphaInfant() {
       setTrainingInfo({status: 'failed'});
     }
   };
-  
 
   const predictSum = async () => {
+    if (!validatePredictSum()) {
+      return;
+    }
+
     try {
       const parsedData = [parseFloat(inputData.a), parseFloat(inputData.b)]
       const response = await fetch(`api/predict_sum/${babyId}`, {
@@ -132,12 +187,15 @@ function AlphaInfant() {
       </div>
       <div className="flex flex-col items-center w-2/3 translate-y-[2rem]">
         <div className="flex flex-col w-1/2 items-start">
+          <label htmlFor="babySelect" className='text-white mb-2 translate-x-[6.7rem]'>Select a baby:</label>
           <select id="babySelect" className="bg-gray-300 rounded p-2 m-2 w-full focus:outline-none translate-x-[-.5rem] " onChange={handleBabyChange}>
             <option>Select a baby</option>
             {babies.map(baby => <option key={baby.id} value={baby.id}>{baby.name}</option>)}
           </select>
-          <label htmlFor="epochsInput" className='text-white mb-2 translate-x-[8.3rem]'>Epoch:</label>
-          <input id="epochsInput" type="number" value={epochs} onChange={handleEpochsChange} className="bg-gray-300 rounded w-16 p-1 mb-4 focus:outline-none translate-x-[7.8rem]" />
+          {babyError && <p style={{ color: 'red' }}>{babyError}</p>}
+          <label htmlFor="epochsInput" className='text-white mb-2 translate-x-[5.7rem]'>Number of Epochs:</label>
+          <input id="epochsInput" type="number" className="bg-gray-300 rounded w-16 p-1 mb-4 focus:outline-none translate-x-[7.8rem]" onChange={handleEpochsChange} />
+          {epochsError && <p style={{ color: 'red' }}>{epochsError}</p>}
         </div>
         <label className='text-white mb-2'>Training Data:</label>
         {trainData.map((item, index) => (
@@ -150,6 +208,7 @@ function AlphaInfant() {
             <button onClick={() => handleRemoveTrainingData(index)} className=' text-white font-bold hover:text-red-400 '>Remove</button>
           </div>
         ))}
+        {trainError && <p style={{ color: 'red' }}>{trainError}</p>}
         <button onClick={handleAddTrainingData} className='bg-bloo hover:bg-light-blue text-white font-bold py-2 px-4 rounded m-2'>Add Training Data</button>
         <button className="bg-blue hover:bg-blue-dark bg-pink text-white font-bold py-2 px-4 rounded m-2" onClick={trainModel}>Train Model</button>
       </div>
@@ -160,11 +219,13 @@ function AlphaInfant() {
           <span className='text-white'> + </span>
           <input name="b" type="number" value={inputData.b} onChange={handleInputChange} className="bg-gray-300 rounded w-1/6 p-1 focus:outline-none" />
         </div>
+        {inputError && <p style={{ color: 'red' }}>{inputError}</p>}
         <button className="bg-blue hover:bg-blue-dark bg-bloo text-white font-bold py-2 px-4 rounded m-2 hover:bg-light-blue" onClick={predictSum}>Predict Sum</button>
         <p className='font-semibold text-xl'><span className='text-white'>Prediction: </span><span className='text-pink'>{prediction}</span></p>
         <div className=' translate-y-[2rem]' ref={splineViewerRef}></div>
       </div>
     </div>
-  );  
+  );
 }
+
 export default AlphaInfant
