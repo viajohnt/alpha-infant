@@ -12,7 +12,7 @@ const Header = () => {
   const { user, setUser } = useUserStore()
   const navigate = useNavigate()
   const location = useLocation()
-
+  
   useEffect(() => {
     const handleFullScreenChange = () => {
       setFullScreen(!!document.fullscreenElement)
@@ -50,21 +50,34 @@ const Header = () => {
 
   return (
     <header className="flex items-center justify-between py-6 px-6 bg-darker-gray">
-      <div className="logo">
+      <div className="flex items-center">
         <Link to="/" className="flex items-center">
           <img src={logo} alt="Logo" className="w-12 h-auto" />
           <span className="text-white text-3xl font-bold ml-2">ALPHA INFANT</span>
         </Link>
+        {user && (
+          <>
+            <div className="flex items-center space-x-4 text-white ml-[30rem]">
+              <Link
+                to="/alpha-infant"
+                className={`text-xl hover:underline ${location.pathname === '/alpha-infant' ? 'underline' : ''}`}
+              >
+                Train Infant
+              </Link>
+              <span className="text-4xl">|</span>
+              <Link
+                to="/ai-quiz"
+                className={`text-xl hover:underline ${location.pathname === '/ai-quiz' ? 'underline' : ''}`}
+              >
+                Daily Quiz
+              </Link>
+            </div>
+          </>
+        )}
       </div>
       <nav>
         {user ? (
           <div className="flex items-center space-x-4 text-white">
-            <Link
-              to="/alpha-infant"
-              className={`text-xl font-bold hover:underline mr-[15rem]  ${location.pathname === '/alpha-infant' ? 'underline' : ''}`}
-            >
-              Train Infant
-            </Link>
             <div>
               <button onClick={toggleFullScreen} className="px-2 py-1 bg-gray-700 text-white rounded mr-16">
                 {fullScreen ? 'Exit Fullscreen' : 'Fullscreen'}
@@ -76,7 +89,7 @@ const Header = () => {
               &#9660; 
             </button>
             {showDropdown && (
-              <div className="absolute mt-[9rem] translate-x-[28rem] w-48 bg-gray-200 rounded-md overflow-hidden shadow-2xl z-10">
+              <div className="absolute mt-[9rem] translate-x-[6rem] w-48 bg-gray-200 rounded-md overflow-hidden shadow-2xl z-10">
                 <Link to="/settings" className="flex items-center px-[3.5rem] py-2 text-sm text-black hover:bg-dark-gray hover:text-white">
                   <img src={gear} alt="settings" className="h-5 w-5 mr-2" />
                   Settings
@@ -101,7 +114,7 @@ const Header = () => {
         )}
       </nav>
     </header>
-  );  
+  );
 };
 
 export default Header

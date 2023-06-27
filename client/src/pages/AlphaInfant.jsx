@@ -44,7 +44,18 @@ function AlphaInfant() {
     setBabies(data)
   }
 
-  
+  const fetchBaby = async (babyId) => {
+    const response = await fetch(`http://localhost:5555/api/babies/${babyId}`)
+    const data = await response.json()
+    setSelectedBaby(data)
+    console.log(data.avatar_url)
+  }
+
+  useEffect(() => {
+    if (babyId) {
+      fetchBaby(babyId)
+    }
+  }, [babyId])
 
   useEffect(() => {
     if(user) {
@@ -146,12 +157,6 @@ function AlphaInfant() {
     }
   };
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = 'unset'
-    };
-  }, [])
 
   const handleInputChange = (e) => {
     setInputData({ ...inputData, [e.target.name]: e.target.value })
@@ -199,6 +204,7 @@ function AlphaInfant() {
       </div>
       <div className="flex flex-col items-center w-2/3">
         <div className="flex flex-col w-1/2 items-center mt-10"> 
+        {selectedBaby && selectedBaby.avatar_url && <img src={selectedBaby.avatar_url} alt="Baby Avatar" className="w-[10rem] h-[10rem] object-cover rounded-full mb-4" />}
           <select id="babySelect" className="bg-gray-300 rounded p-2 m-2 w-full focus:outline-none" onChange={handleBabyChange}>
             <option>Select a baby</option>
             {babies.map(baby => <option key={baby.id} value={baby.id}>{baby.name}</option>)}

@@ -52,6 +52,7 @@ class PredictSum(Resource):
         prediction = model.predict(np.array([data]))
         return {'prediction': prediction.tolist()}
 
+
 class Signup(Resource):
     def post(self):
         data = request.get_json()
