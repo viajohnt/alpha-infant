@@ -48,7 +48,6 @@ function AlphaInfant() {
     const response = await fetch(`http://localhost:5555/api/babies/${babyId}`)
     const data = await response.json()
     setSelectedBaby(data)
-    console.log(data.avatar_url)
   }
 
   useEffect(() => {

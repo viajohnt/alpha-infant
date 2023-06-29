@@ -10,6 +10,7 @@ import Quiz from './pages/Quiz'
 import Leaderboard from './pages/Leaderboard'
 import Settings from './pages/Settings'
 import Home from './pages/Home'
+import About from './pages/About'
 import './index.css'
 
 const router = createBrowserRouter(createRoutesFromElements(
@@ -22,6 +23,11 @@ const router = createBrowserRouter(createRoutesFromElements(
       id="home"
       path="/"
       element={<Home />}
+    />
+    <Route
+      id="about"
+      path="/about"
+      element={<About />}
     />
     <Route
       id="alpha-infant"

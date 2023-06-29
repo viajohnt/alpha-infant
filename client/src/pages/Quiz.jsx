@@ -81,7 +81,6 @@ function Quiz() {
       setScore(finalScore);
       await submitQuizScore(babyId, finalScore);
     } catch (err) {
-      console.error(err);
       setNetworkError('Failed to start quiz.');
     }
   };
@@ -101,10 +100,17 @@ function Quiz() {
       const data = await response.json();
       console.log(data.message);
     } catch (error) {
-      console.error('There was an error!', error);
       setNetworkError('Failed to submit quiz score.');
     }
   }
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+  
 
   return (
     <div className="flex flex-row items-start bg-dark-gray h-screen justify-center py-10">

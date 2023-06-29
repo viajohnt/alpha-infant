@@ -55,32 +55,46 @@ const Header = () => {
           <img src={logo} alt="Logo" className="w-12 h-auto" />
           <span className="text-white text-3xl font-bold ml-2">ALPHA INFANT</span>
         </Link>
-        {user && (
-          <>
-            <div className="flex items-center space-x-4 text-white ml-[30rem]">
+        <div className="flex items-center space-x-4 text-white ml-[20rem]">
+          <Link
+            to="/about"
+            className={`text-xl hover:underline ${location.pathname === '/about' ? 'underline' : ''}`}
+          >
+            About
+          </Link>
+          <span className="text-4xl">/</span>
+          <Link
+            to="/leaderboard"
+            className={`text-xl hover:underline ${location.pathname === '/leaderboard' ? 'underline' : ''}`}
+          >
+            Leaderboard
+          </Link>
+          {user && (
+            <>
+              <span className="text-4xl">/</span>
+              <Link
+                to="/create-baby"
+                className={`text-xl hover:underline ${location.pathname === '/create-baby' ? 'underline' : ''}`}
+              >
+                Create Infant
+              </Link>
+              <span className="text-4xl">/</span>
               <Link
                 to="/alpha-infant"
                 className={`text-xl hover:underline ${location.pathname === '/alpha-infant' ? 'underline' : ''}`}
               >
                 Train Infant
               </Link>
-              <span className="text-4xl">|</span>
+              <span className="text-4xl">/</span>
               <Link
                 to="/ai-quiz"
                 className={`text-xl hover:underline ${location.pathname === '/ai-quiz' ? 'underline' : ''}`}
               >
                 Daily Quiz
               </Link>
-              <span className="text-4xl">|</span>
-              <Link
-                to="/leaderboard"
-                className={`text-xl hover:underline ${location.pathname === '/leaderboard' ? 'underline' : ''}`}
-              >
-                Leaderboard
-              </Link>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
       <nav>
         {user ? (
