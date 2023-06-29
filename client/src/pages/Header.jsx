@@ -71,6 +71,13 @@ const Header = () => {
               >
                 Daily Quiz
               </Link>
+              <span className="text-4xl">|</span>
+              <Link
+                to="/leaderboard"
+                className={`text-xl hover:underline ${location.pathname === '/leaderboard' ? 'underline' : ''}`}
+              >
+                Leaderboard
+              </Link>
             </div>
           </>
         )}

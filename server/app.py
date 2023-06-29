@@ -1,11 +1,14 @@
 from flask import request, make_response, session
 from flask_restful import Resource
 from config import app, db, api
-from models import db, User, Baby, Output, Input
+from models import db, User, Baby, Output, Input, QuizScore
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense
+from flask import jsonify
+from sqlalchemy.sql import func
 import numpy as np
 import os
+
 
 class TrainModel(Resource):
     def post(self, baby_id): 
@@ -258,7 +261,29 @@ class InputById(Resource):
         if not input:
             return {"error": "Input not found"}, 404
         return input.to_dict(), 200
+    
+class QuizScoreSubmission(Resource):
+    def post(self, baby_id): 
+        try:
+            baby = Baby.query.filter_by(id=baby_id).first()
+            if not baby:
+                return {"error": "Baby not found"}, 404
 
+            data = request.get_json()
+            score = QuizScore(baby_id=baby_id, score=data['score'])
+            db.session.add(score)
+            db.session.commit()
+            return {"message": "Quiz score submitted successfully."}, 200
+        except Exception as e:
+            return {'error': str(e)}, 422
+
+class Leaderboard(Resource):
+    def get(self): 
+        try:
+            top_babies = db.session.query(Baby, db.func.avg(QuizScore.score).label('average_score')).join(QuizScore).group_by(Baby.id).order_by(db.desc('average_score')).limit(10).all()
+            return [{"baby_id": baby.id, "baby_name": baby.name, "average_score": average_score} for baby, average_score in top_babies], 200
+        except Exception as e:
+            return {'error': str(e)}, 422
 
 
 api.add_resource(Index, '/')
@@ -277,6 +302,8 @@ api.add_resource(Inputs, '/inputs')
 api.add_resource(InputById, '/inputs/<int:id>')
 api.add_resource(TrainModel, '/train_model/<int:baby_id>') 
 api.add_resource(PredictSum, '/predict_sum/<int:baby_id>') 
+api.add_resource(QuizScoreSubmission, '/submit_quiz_score/<int:baby_id>') 
+api.add_resource(Leaderboard, '/leaderboard')
 
 if __name__ == '__main__':
     if os.path.isfile('model.h5'):

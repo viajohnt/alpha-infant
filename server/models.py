@@ -61,6 +61,19 @@ class Baby(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Baby {self.id}>'
+    
+class QuizScore(db.Model, SerializerMixin):
+    __tablename__ = 'quiz_scores'
+
+    id = Column(Integer, primary_key=True)
+    baby_id = Column(Integer, ForeignKey('babies.id'))
+    score = Column(Integer)
+
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
+    def __repr__(self):
+        return f'<QuizScore {self.id}>'
 
 
 class Output(db.Model, SerializerMixin):

@@ -157,7 +157,6 @@ function AlphaInfant() {
     }
   };
 
-
   const handleInputChange = (e) => {
     setInputData({ ...inputData, [e.target.name]: e.target.value })
   }
@@ -187,6 +186,13 @@ function AlphaInfant() {
   const handleEpochsChange = (e) => {
     setEpochs(Number(e.target.value));
   }
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   
 
@@ -240,12 +246,12 @@ function AlphaInfant() {
         <button className="bg-blue hover:bg-blue-dark bg-bloo text-white font-bold py-2 px-4 rounded m-2 hover:bg-light-blue" onClick={predictSum}>Predict Sum</button>
         <p className='font-semibold text-xl'><span className='text-white'>Prediction: </span><span className='text-pink'>{prediction}</span></p>
   
-        <div className=' translate-y-[2rem]' ref={splineViewerRef}></div>
-      <div className="flex flex-col items-center w-full bg-light-gray p-4 mt-4 rounded shadow-lg">
+        <div className=' translate-y-[-2rem]' ref={splineViewerRef}></div>
+      <div className="flex flex-col items-center w-full bg-light-gray p-4 mt-[-6rem] rounded shadow-lg">
         <h2 className='text-off-white font-semibold text-2xl mb-4'>History</h2>
-        <div className="overflow-y-auto h-full max-h-[225px]">
+        <div className="overflow-y-auto h-full max-h-[210px]">
           {[...history].reverse().map((record, index) => (
-            <div key={index} className='p-2 border border-gray-200 rounded mb-2 text-gray-300 w-[23rem]'>
+            <div key={index} className='p-2 border border-gray-200 rounded mb-1 text-gray-300 w-[23rem]'>
               <p><strong>Input:</strong> a={record.input.a}, b={record.input.b}</p>
               <p><strong>Output:</strong> {record.output}</p>
             </div>

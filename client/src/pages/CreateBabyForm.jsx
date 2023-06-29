@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useUserStore from '../hooks/userStore';
 
 function CreateBabyForm() {
@@ -37,7 +37,13 @@ function CreateBabyForm() {
       console.error(error);
       alert('Error creating baby');
     }
-  };
+  }
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   return (
     <div className="form-container flex items-center justify-center h-screen bg-dark-gray font-dm-sans pt-[10rem]">

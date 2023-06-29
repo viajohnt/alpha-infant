@@ -7,6 +7,7 @@ import ErrorPage from './pages/ErrorPage'
 import AlphaInfant from './pages/AlphaInfant'
 import CreateBabyForm from './pages/CreateBabyForm'
 import Quiz from './pages/Quiz'
+import Leaderboard from './pages/Leaderboard'
 import Settings from './pages/Settings'
 import Home from './pages/Home'
 import './index.css'
@@ -36,6 +37,11 @@ const router = createBrowserRouter(createRoutesFromElements(
       id="ai-quiz"
       path="/ai-quiz"
       element={<Quiz />}
+    />
+    <Route
+      id="leaderboard"
+      path="/leaderboard"
+      element={<Leaderboard />}
     />
     <Route
       id="settings"
