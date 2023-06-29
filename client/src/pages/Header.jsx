@@ -16,11 +16,11 @@ const Header = () => {
   useEffect(() => {
     const handleFullScreenChange = () => {
       setFullScreen(!!document.fullscreenElement)
-    };
+    }
     document.addEventListener('fullscreenchange', handleFullScreenChange)
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange)
-    };
+    }
   }, [])
 
   const handleLogout = async () => {
@@ -30,7 +30,7 @@ const Header = () => {
         headers: {
           'Content-Type': 'application/json',
         }
-      });
+      })
       if (response.status === 204) {
         setUser(null)
         navigate('/')
@@ -38,7 +38,7 @@ const Header = () => {
     } catch (error) {
       console.error(error)
     }
-  };
+  }
 
   const toggleFullScreen = () => {
     if (fullScreen) {
@@ -46,7 +46,7 @@ const Header = () => {
     } else {
       document.documentElement.requestFullscreen()
     }
-  };
+  }
 
   return (
     <header className="flex items-center justify-between py-6 px-6 bg-darker-gray">
@@ -135,7 +135,7 @@ const Header = () => {
         )}
       </nav>
     </header>
-  );
-};
+  )
+}
 
 export default Header

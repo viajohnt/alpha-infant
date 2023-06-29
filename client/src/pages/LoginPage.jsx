@@ -9,7 +9,6 @@ export default function LoginForm() {
   const { user, setUser } = useUserStore()
   const navigate = useNavigate()
 
-
   const handleSubmit = async (event) => {
     event.preventDefault()
     try {
@@ -36,11 +35,9 @@ export default function LoginForm() {
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = 'unset'
-    };
+    }
   }, [])
   
-
-
   return (
     <div className="login-form flex items-center justify-center h-screen bg-dark-gray font-dm-sans pt-[10rem]">
       <div className="bg-light-gray rounded-lg shadow-lg p-12 w-full max-w-lg translate-y-[-8rem]">

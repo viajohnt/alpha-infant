@@ -5,9 +5,9 @@ function AlphaInfant() {
   const { user } = useUserStore()
   const [babies, setBabies] = useState([])
   const [babyId, setBabyId] = useState("")
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState([])
   const [babyError, setBabyError] = useState('')
-  const [selectedBaby, setSelectedBaby] = useState(null);
+  const [selectedBaby, setSelectedBaby] = useState(null)
   const [trainData, setTrainData] = useState([{a: "", b: "", c: ""}])
   const [inputData, setInputData] = useState({a: "", b: ""})
   const [prediction, setPrediction] = useState(null)
@@ -15,28 +15,8 @@ function AlphaInfant() {
   const [epochs, setEpochs] = useState(1)
   const [epochsError, setEpochsError] = useState('')
   const [trainError, setTrainError] = useState('')
-  const [inputError, setInputError] = useState('');
+  const [inputError, setInputError] = useState('')
   const splineViewerRef = useRef(null)
-
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://unpkg.com/@splinetool/viewer@0.9.373/build/spline-viewer.js'
-    script.type = 'module'
-    document.body.appendChild(script)
-
-    const viewer = document.createElement('spline-viewer')
-    viewer.url = 'https://prod.spline.design/74VN5bWSAZSe3lZU/scene.splinecode'
-    viewer.style.width = '450px' 
-    viewer.style.height = '450px' 
-
-    if (splineViewerRef.current) {
-      splineViewerRef.current.appendChild(viewer)
-    }
-    return () => {
-      script?.remove()
-      viewer?.remove()
-    }
-  }, [])
 
   const fetchBabies = async (userId) => {
     const response = await fetch(`http://localhost:5555/api/babies_by_user/${userId}`)
@@ -61,62 +41,79 @@ function AlphaInfant() {
       fetchBabies(user.id)
     }
   }, [user])
+
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/@splinetool/viewer@0.9.373/build/spline-viewer.js'
+    script.type = 'module'
+    document.body.appendChild(script)
+
+    const viewer = document.createElement('spline-viewer')
+    viewer.url = 'https://prod.spline.design/74VN5bWSAZSe3lZU/scene.splinecode'
+    viewer.style.width = '450px' 
+    viewer.style.height = '450px' 
+
+    if (splineViewerRef.current) {
+      splineViewerRef.current.appendChild(viewer)
+    }
+    return () => {
+      script?.remove()
+      viewer?.remove()
+    }
+  }, [])
   
   const validateTrainModel = () => {
-    let error = false;
+    let error = false
 
     if (!babyId) {
-      setBabyError('Selecting a baby is required.');
-      error = true;
+      setBabyError('Selecting a baby is required.')
+      error = true
     } else {
-      setBabyError('');
+      setBabyError('')
     }
 
     if (epochs <= 0) {
-      setEpochsError('Epochs must be a positive number.');
-      error = true;
+      setEpochsError('Epochs must be a positive number.')
+      error = true
     } else {
-      setEpochsError('');
+      setEpochsError('')
     }
 
     trainData.forEach((data, index) => {
       if (!data.a || !data.b || !data.c) {
-        setTrainError(`Fill in all fields for training data row ${index + 1}.`);
-        error = true;
+        setTrainError(`Fill in all fields for training data row ${index + 1}.`)
+        error = true
       }
-    });
-
+    })
     if (!error) {
-      setTrainError('');
+      setTrainError('')
     }
-
-    return !error;
+    return !error
   }
 
   const validatePredictSum = () => {
-    let error = false;
+    let error = false
 
     if (!inputData.a || !inputData.b) {
-      setInputError('Fill in all fields for testing data.');
-      error = true;
+      setInputError('Fill in all fields for testing data.')
+      error = true
     } else {
-      setInputError('');
+      setInputError('')
     }
 
-    return !error;
+    return !error
   }
 
   const trainModel = async () => {
     if (!validateTrainModel()) {
-      return;
+      return
     }
-
     try {
       const formattedTrainData = {
         X: trainData.map(item => [parseFloat(item.a), parseFloat(item.b)]),
         Y: trainData.map(item => [parseFloat(item.c)]),
         epochs: epochs, 
-      };
+      }
       
       const response = await fetch(`api/train_model/${babyId}`, {
         method: 'POST',
@@ -124,44 +121,44 @@ function AlphaInfant() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(formattedTrainData)
-      });
-      const data = await response.json();
-      setTrainingInfo({status: data.status, loss: data.loss_per_epoch});
+      })
+      const data = await response.json()
+      setTrainingInfo({status: data.status, loss: data.loss_per_epoch})
     } catch (err) {
-      console.error(err);
-      setTrainingInfo({status: 'failed'});
+      console.error(err)
+      setTrainingInfo({status: 'failed'})
     }
-  };
+  }
 
   const predictSum = async () => {
     if (!validatePredictSum()) {
-      return;
+      return
     }
 
     try {
-      const parsedData = [parseFloat(inputData.a), parseFloat(inputData.b)];
+      const parsedData = [parseFloat(inputData.a), parseFloat(inputData.b)]
       const response = await fetch(`api/predict_sum/${babyId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ data: parsedData }),
-      });
-      const data = await response.json();
-      setPrediction(data.prediction);
+      })
+      const data = await response.json()
+      setPrediction(data.prediction)
 
-      setHistory(prevHistory => [...prevHistory, { input: inputData, output: data.prediction }]);
+      setHistory(prevHistory => [...prevHistory, { input: inputData, output: data.prediction }])
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   const handleInputChange = (e) => {
     setInputData({ ...inputData, [e.target.name]: e.target.value })
   }
 
   const handleTrainingDataChange = (e, index) => {
-    const newTrainData = [...trainData];
+    const newTrainData = [...trainData]
     newTrainData[index][e.target.name] = e.target.value
     setTrainData(newTrainData)
   }
@@ -175,7 +172,7 @@ function AlphaInfant() {
   }
 
   const handleRemoveTrainingData = (index) => {
-    setTrainData(trainData.filter((item, i) => i !== index));
+    setTrainData(trainData.filter((item, i) => i !== index))
   }
   
   const handleBabyChange = (e) => {
@@ -183,17 +180,15 @@ function AlphaInfant() {
   }
 
   const handleEpochsChange = (e) => {
-    setEpochs(Number(e.target.value));
+    setEpochs(Number(e.target.value))
   }
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
 
   return (
     <div className="flex flex-row items-start bg-dark-gray h-screen justify-center">
@@ -259,7 +254,7 @@ function AlphaInfant() {
       </div>
     </div>
   </div>
-); 
+  ) 
 }
 
 export default AlphaInfant

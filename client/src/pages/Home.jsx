@@ -1,49 +1,49 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import bgGif from '../assets/background.gif';
-import useUserStore from '../hooks/userStore';
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import bgGif from '../assets/background.gif'
+import useUserStore from '../hooks/userStore'
 
 function Home() {
-  const splineViewerRef = useRef(null);
-  const { user } = useUserStore();
-  const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState('');
+  const splineViewerRef = useRef(null)
+  const { user } = useUserStore()
+  const navigate = useNavigate()
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/@splinetool/viewer@0.9.373/build/spline-viewer.js'
+    script.type = 'module'
+    document.body.appendChild(script)
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/@splinetool/viewer@0.9.373/build/spline-viewer.js';
-    script.type = 'module';
-    document.body.appendChild(script);
-
-    const viewer = document.createElement('spline-viewer');
-    viewer.url = 'https://prod.spline.design/J-5YmKQhGuGSpgV3/scene.splinecode';
-    viewer.style.width = '450px';
-    viewer.style.height = '350px';
+    const viewer = document.createElement('spline-viewer')
+    viewer.url = 'https://prod.spline.design/J-5YmKQhGuGSpgV3/scene.splinecode'
+    viewer.style.width = '450px'
+    viewer.style.height = '350px'
 
     if (splineViewerRef.current) {
-      splineViewerRef.current.appendChild(viewer);
+      splineViewerRef.current.appendChild(viewer)
     }
 
     return () => {
-      script.remove();
-      viewer.remove();
-    };
-  }, []);
+      script.remove()
+      viewer.remove()
+    }
+  }, [])
 
   const handleCreateBaby = () => {
     if (user) {
-      navigate('/create-baby');
+      navigate('/create-baby')
     } else {
-      setErrorMessage('You must be signed in to create a baby');
+      setErrorMessage('You must be signed in to create a baby')
     }
-  };
+  }
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
 
   return (
     <div
@@ -62,8 +62,8 @@ function Home() {
         <div ref={splineViewerRef}></div>
       </button>
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home
 

@@ -1,89 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import useUserStore from '../hooks/userStore';
+import React, { useState, useEffect } from 'react'
+import useUserStore from '../hooks/userStore'
 
 function Quiz() {
-  const { user } = useUserStore();
-  const [babies, setBabies] = useState([]);
-  const [babyId, setBabyId] = useState("");
-  const [quizQuestions, setQuizQuestions] = useState([]);
-  const [quizResults, setQuizResults] = useState([]);
-  const [babyError, setBabyError] = useState('');
-  const [networkError, setNetworkError] = useState('');
-  const [score, setScore] = useState(0);
-
-  useEffect(() => {
-    if(user) {
-      fetchBabies(user.id);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    generateQuizQuestions();
-  }, []);
+  const { user } = useUserStore()
+  const [babies, setBabies] = useState([])
+  const [babyId, setBabyId] = useState("")
+  const [quizQuestions, setQuizQuestions] = useState([])
+  const [quizResults, setQuizResults] = useState([])
+  const [babyError, setBabyError] = useState('')
+  const [networkError, setNetworkError] = useState('')
+  const [score, setScore] = useState(0)
 
   const fetchBabies = async (userId) => {
-    const response = await fetch(`http://localhost:5555/api/babies_by_user/${userId}`);
-    const data = await response.json();
-    setBabies(data);
-  }
-
-  const handleBabyChange = (e) => {
-    setBabyId(e.target.value);
-  }
-
-  const validateQuiz = () => {
-    let error = false;
-
-    if (!babyId) {
-      setBabyError('Selecting a baby is required.');
-      error = true;
-    } else {
-      setBabyError('');
-    }
-
-    return !error;
+    const response = await fetch(`http://localhost:5555/api/babies_by_user/${userId}`)
+    const data = await response.json()
+    setBabies(data)
   }
 
   const generateQuizQuestions = () => {
-    let questions = [];
+    let questions = []
     for (let i = 0; i < 5; i++) {
-      let a = Math.round(Math.random() * 100);
-      let b = Math.round(Math.random() * 100);
-      questions.push({a: a, b: b});
+      let a = Math.round(Math.random() * 100)
+      let b = Math.round(Math.random() * 100)
+      questions.push({a: a, b: b})
     }
-    setQuizQuestions(questions);
+    setQuizQuestions(questions)
   }
+
+  useEffect(() => {
+    if(user) {
+      fetchBabies(user.id)
+    }
+  }, [user])
+
+  useEffect(() => {
+    generateQuizQuestions()
+  }, [])
 
   const startQuiz = async () => {
     if (!validateQuiz()) {
       return
     }
     try {
-      let results = [];
-      let score = 0;
+      let results = []
+      let score = 0
       for (let question of quizQuestions) {
-        const actualResult = question.a + question.b;
+        const actualResult = question.a + question.b
         const response = await fetch(`api/predict_sum/${babyId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ data: [question.a, question.b] }),
-        });
-        const data = await response.json();
+        })
+        const data = await response.json()
         if (Math.abs(data.prediction - actualResult) <= 1) {
-          score++;
+          score++
         }
-        results.push({question: question, prediction: data.prediction, actual: actualResult});
+        results.push({question: question, prediction: data.prediction, actual: actualResult})
       }
-      const finalScore = (score / quizQuestions.length) * 100;
-      setQuizResults(results);
-      setScore(finalScore);
-      await submitQuizScore(babyId, finalScore);
+      const finalScore = (score / quizQuestions.length) * 100
+      setQuizResults(results)
+      setScore(finalScore)
+      await submitQuizScore(babyId, finalScore)
     } catch (err) {
-      setNetworkError('Failed to start quiz.');
+      setNetworkError('Failed to start quiz.')
     }
-  };
+  }
+
+  const validateQuiz = () => {
+    let error = false
+
+    if (!babyId) {
+      setBabyError('Selecting a baby is required.')
+      error = true
+    } else {
+      setBabyError('')
+    }
+
+    return !error
+  }
 
   const submitQuizScore = async (babyId, score) => {
     try {
@@ -93,23 +89,27 @@ function Quiz() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ score: score }),
-      });
+      })
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Network response was not ok')
       }
-      const data = await response.json();
-      console.log(data.message);
+      const data = await response.json()
+      console.log(data.message)
     } catch (error) {
-      setNetworkError('Failed to submit quiz score.');
+      setNetworkError('Failed to submit quiz score.')
     }
   }
 
+  const handleBabyChange = (e) => {
+    setBabyId(e.target.value)
+  }
+
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
   
 
   return (
@@ -147,7 +147,7 @@ function Quiz() {
         )}
       </div>
     </div>
-  );
+  )
 }
 
-export default Quiz;
+export default Quiz

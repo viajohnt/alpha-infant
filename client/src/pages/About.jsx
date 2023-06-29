@@ -53,10 +53,9 @@ function About() {
           <p className='text-white mt-2 max-w-xl'>The softmax function takes an un-normalized set of scores and makes them into probabilities by exponentiating each score and then normalizing these values. By doing so, softmax ensures the output probabilities are positive and their total sums up to one, making it easier to interpret the output of a multi-class classification problem</p>
         </div>
     </div>
-    <p className='text-center text-gray-400 mt-10'>
+      <p className='text-center text-gray-400 mt-10'>
         Sources: [https://www.youtube.com/@sentdex]
       </p>
-
     </div>
   )
 }

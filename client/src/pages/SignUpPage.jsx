@@ -9,9 +9,7 @@ export default function SignUpForm() {
   const [avatarUrl, setAvatarUrl] = useState("")
   const [errorMsg, setErrorMsg] = useState("")
   const navigate = useNavigate()
-
   const { user, setUser } = useUserStore()
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -44,11 +42,11 @@ export default function SignUpForm() {
   }
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
   
 
   return (

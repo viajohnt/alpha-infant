@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import useUserStore from '../hooks/userStore';
+import React, { useState, useEffect } from 'react'
+import useUserStore from '../hooks/userStore'
 
 function CreateBabyForm() {
-  const { user } = useUserStore();
-  const [name, setName] = useState('');
-  const [favoriteFood, setFavoriteFood] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const { user } = useUserStore()
+  const [name, setName] = useState('')
+  const [favoriteFood, setFavoriteFood] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
 
   const handleSubmit = async event => {
-    event.preventDefault();
+    event.preventDefault()
     try {
       const response = await fetch('/api/babies', {
         method: 'POST',
@@ -21,29 +21,29 @@ function CreateBabyForm() {
           favorite_food: favoriteFood,
           avatar_url: avatarUrl,
         }),
-      });
-
+      })
       if (response.status === 201) {
-        const responseData = await response.json();
-        alert(`Baby ${responseData.name} created successfully with model path: ${responseData.model_path}`);
-        setName('');
-        setFavoriteFood('');
-        setAvatarUrl('');
+        const responseData = await response.json()
+        alert(`Baby ${responseData.name} created successfully with model path: ${responseData.model_path}`)
+        setName('')
+        setFavoriteFood('')
+        setAvatarUrl('')
       } else {
-        const responseData = await response.json();
-        alert(responseData.error || 'Error creating baby');
+        const responseData = await response.json()
+        alert(responseData.error || 'Error creating baby')
       }
     } catch (error) {
-      console.error(error);
-      alert('Error creating baby');
+      console.error(error)
+      alert('Error creating baby')
     }
   }
+
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
 
   return (
     <div className="form-container flex items-center justify-center h-screen bg-dark-gray font-dm-sans pt-[10rem]">
@@ -83,7 +83,7 @@ function CreateBabyForm() {
         </form>
       </div>
     </div>
-  );
+  )
 }
 
-export default CreateBabyForm;
+export default CreateBabyForm

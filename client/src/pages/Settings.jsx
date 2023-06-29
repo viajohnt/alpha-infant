@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from "react";
-import useUserStore from "../hooks/userStore";
+import React, { useState, useEffect } from "react"
+import useUserStore from "../hooks/userStore"
 
 function Settings() {
-  const { user, setUser } = useUserStore();
-  const [babies, setBabies] = useState([]);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [selectedBabyId, setSelectedBabyId] = useState(null);
+  const { user, setUser } = useUserStore()
+  const [babies, setBabies] = useState([])
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [selectedBabyId, setSelectedBabyId] = useState(null)
   const [userData, setUserData] = useState({
     avatar_url: user?.avatar_url || '',
   })
-
-  useEffect(() => {
-    if (user && user.id) {
-      fetchBabies(user.id);
-    }
-  }, [user]);
 
   const fetchBabies = async (userId) => {
     const response = await fetch(`http://localhost:5555/api/babies_by_user/${userId}`)
@@ -25,39 +19,21 @@ function Settings() {
   const deleteBaby = async (babyId) => {
     await fetch(`http://localhost:5555/api/babies/${babyId}`, {
       method: "DELETE",
-    });
+    })
     fetchBabies(user.id)
-  };
-
-  useEffect(() => {
-    if (user && user.id) {
-      getUser(user.id);
-    }
-  }, []);
+  }
 
   function getUser(userId) {
     fetch(`api/users/${userId}`)
       .then((response) => response.json())
       .then((data) => {
-        setUser(data);
+        setUser(data)
         setUserData({
           avatar_url: data.avatar_url || '',
-        });
+        })
       })
-      .catch((error) => {});
+      .catch((error) => {})
   }
-
-  const handleInputChange = (event) => {
-    setUserData({
-      ...userData,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    updateUser(user.id, userData);
-  };
 
   function updateUser(userId, userData) {
     fetch(`api/users/${userId}`, {
@@ -69,34 +45,58 @@ function Settings() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setUser(data);
+        setUser(data)
         setUserData({
           avatar_url: data.avatar_url || '',
-        });
+        })
       })
-      .catch((error) => {});
+      .catch((error) => {})
+  }
+
+  useEffect(() => {
+    if (user && user.id) {
+      getUser(user.id)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (user && user.id) {
+      fetchBabies(user.id)
+    }
+  }, [user])
+
+  const handleInputChange = (event) => {
+    setUserData({
+      ...userData,
+      [event.target.name]: event.target.value,
+    })
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    updateUser(user.id, userData)
   }
 
   const openConfirm = (babyId) => {
-    setSelectedBabyId(babyId);
-    setShowConfirm(true);
-  };
+    setSelectedBabyId(babyId)
+    setShowConfirm(true)
+  }
 
   const closeConfirm = () => {
-    setShowConfirm(false);
-    setSelectedBabyId(null);
+    setShowConfirm(false)
+    setSelectedBabyId(null)
   }
   
   const confirmDelete = () => {
-    deleteBaby(selectedBabyId);
-    closeConfirm();
+    deleteBaby(selectedBabyId)
+    closeConfirm()
   }
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = 'unset'
-    };
+    }
   }, [])
 
   return (
@@ -149,7 +149,7 @@ function Settings() {
         )}
       </div>
     </div>
-  );  
+  )  
 }
 
-export default Settings;
+export default Settings
