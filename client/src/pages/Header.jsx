@@ -55,7 +55,7 @@ const Header = () => {
           <img src={logo} alt="Logo" className="w-12 h-auto" />
           <span className="text-white text-3xl font-bold ml-2">ALPHA INFANT</span>
         </Link>
-        <div className="flex items-center space-x-4 text-white ml-[20rem]">
+        <div className="flex items-center space-x-4 text-white ml-[6rem]">
           <Link
             to="/about"
             className={`text-xl hover:underline ${location.pathname === '/about' ? 'underline' : ''}`}
