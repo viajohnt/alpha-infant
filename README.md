@@ -63,6 +63,6 @@ Windows or Mac
 
 For any additional questions or comments, please contact:
 
-- [Your Name](mailto:viajohnt@gmail.com)
+- [John Truong](mailto:viajohnt@gmail.com)
 - [LinkedIn](https://www.linkedin.com/in/viajohnt/)
 - [GitHub](https://github.com/viajohnt)
